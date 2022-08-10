@@ -111,3 +111,57 @@ capacity is 17773524 blocks
 [u]srrootdrive        [re]size
 fx/repartition>
 ```
+
+3. [o]ptiondrive.
+- partition 7 for general data store, useful for example when we have a secondary disk for data
+```
+fx/repartition> o 
+
+fx/repartition/optiondrive: type of data partition = (xfs)
+
+----- partitions-----
+part  type        blocks            Megabytes   (base+size)
+  7: xfs        4096 + 17769428       2 + 8676
+  8: volhdr        0 + 4096           0 + 2   
+ 10: volume        0 + 17773524       0 + 8678
+
+capacity is 17773524 blocks
+
+----- please choose one (? for help, .. to quit this menu)-----
+[ro]otdrive           [o]ptiondrive         [e]xpert
+[u]srrootdrive        [re]size
+fx/repartition>
+```
+
+Now let's make the partitioning more complicated. What about a root partition and another one for data? For example with big disks using EFS, where the maximum partition is 8 GB, we could have:
+- one root EFS partition of 8 GB and another one of type 7 EFS of 8 GB
+- one root EFS partition of 2 GB and another one of type 7 XFS containing the rest of the disk capacity
+
+As practical example, let's partition a disk using two XFS partitions:
+
+1. We start from a [ro]otdrive configuration:
+```
+fx/repartition> ro
+
+fx/repartition/rootdrive: type of data partition = (xfs)
+
+----- partitions-----
+part  type        blocks            Megabytes   (base+size)
+  0: xfs      266240 + 17507284     130 + 8548
+  1: raw        4096 + 262144         2 + 128 
+  8: volhdr        0 + 4096           0 + 2   
+ 10: volume        0 + 17773524       0 + 8678
+
+capacity is 17773524 blocks
+
+----- please choose one (? for help, .. to quit this menu)-----
+[ro]otdrive           [o]ptiondrive         [e]xpert
+[u]srrootdrive        [re]size
+fx/repartition>
+```
+
+2. Let's watch the column "Megabytes (base+size)":
+- partition 8 takes from MB 0 to MB 1 (2 MB in total)
+- partition 1 takes from MB 2 to MB 129 (128 MB in total)
+- partition 0 takes from MB 130 to MB 8677 (8548 MB in total)
+
