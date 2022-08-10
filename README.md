@@ -135,7 +135,7 @@ fx/repartition>
 
 Now let's make the partitioning more complicated. What about a root partition and another one for data? For example with big disks using EFS, where the maximum partition is 8 GB, we could have:
 - one root EFS partition of 8 GB and another one of type 7 EFS of 8 GB
-- one root EFS partition of 2 GB and another one of type 7 XFS containing the rest of the disk capacity
+- one root EFS partition of 2 GB and another one of type 7 XFS containing the remaining disk space
 
 As practical example, let's partition a disk using two XFS partitions:
 
@@ -164,4 +164,66 @@ fx/repartition>
 - partition 8 takes from MB 0 to MB 1 (2 MB in total)
 - partition 1 takes from MB 2 to MB 129 (128 MB in total)
 - partition 0 takes from MB 130 to MB 8677 (8548 MB in total)
+
+3. Let's make partition 0 smaller, 2 GB, and when it asks for partition 7, we'll start from where partition 0 ends and use the remaining space. It's a manual method but it works:
+- partition 7: we start at 2178 which is where root ends (130 + 2048) and specify the maximum size possible:
+```
+----- please choose one (? for help, .. to quit this menu)-----
+[ro]otdrive           [o]ptiondrive         [e]xpert
+[u]srrootdrive        [re]size
+fx/repartition> e
+
+Enter .. when done
+fx/repartition/expert: change partition = (0)
+before:  type xfs        block  266240,       130 MB
+                         len:  17507284 blks, 8548 MB
+fx/repartition/expert: partition type = (xfs)
+fx/repartition/expert: base in megabytes = (130)
+fx/repartition/expert: size in megabytes (max 8548) = (8548) 2048
+ after:  type xfs        block  266240,       130 MB
+                         len:  4194304 blks, 2048 MB
+fx/repartition/expert: change partition = (1)
+before:  type raw        block    4096,         2 MB
+                         len:   262144 blks,  128 MB
+fx/repartition/expert: partition type = (raw)
+fx/repartition/expert: base in megabytes = (2)
+fx/repartition/expert: size in megabytes (max 8676) = (128)
+fx/repartition/expert: change partition = (6)
+before:  type xfs        block       0,         0 MB
+                         len:        0 blks,    0 MB
+fx/repartition/expert: partition type = (xfs)
+fx/repartition/expert: base in megabytes = (0)
+fx/repartition/expert: size in megabytes (max 8678) = (0)
+ after:  type xfs        block       0,         0 MB
+                         len:        0 blks,    0 MB
+fx/repartition/expert: change partition = (7)
+before:  type xfs        block       0,         0 MB
+                         len:        0 blks,    0 MB
+fx/repartition/expert: partition type = (xfs)
+fx/repartition/expert: base in megabytes = (0) 2178
+fx/repartition/expert: size in megabytes (max 6500) = (0) 6500
+ after:  type xfs        block 4460544,      2178 MB
+                         len:  13312980 blks, 6500 MB
+fx/repartition/expert: change partition = (8)
+before:  type volhdr     block       0,         0 MB
+                         len:     4096 blks,    2 MB
+fx/repartition/expert: partition type = (volhdr)
+fx/repartition/expert: base in megabytes = (0)
+fx/repartition/expert: size in megabytes (max 8678) = (2)
+
+----- partitions-----
+part  type        blocks            Megabytes   (base+size)
+  0: xfs      266240 + 4194304      130 + 2048
+  1: raw        4096 + 262144         2 + 128 
+  7: xfs     4460544 + 13312980    2178 + 6500
+  8: volhdr        0 + 4096           0 + 2   
+ 10: volume        0 + 17773524       0 + 8678
+
+capacity is 17773524 blocks
+
+----- please choose one (? for help, .. to quit this menu)-----
+[ro]otdrive           [o]ptiondrive         [e]xpert
+[u]srrootdrive        [re]size
+fx/repartition>
+```
 
