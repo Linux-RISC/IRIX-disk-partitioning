@@ -60,4 +60,4 @@ capacity is 17773524 blocks
 [u]srrootdrive        [re]size
 ```
 
-## Partition templates
+#### Partition templates
