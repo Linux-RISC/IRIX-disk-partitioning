@@ -1,31 +1,31 @@
 # IRIX-disk-partitioning
 IRIX disk partitioning
 
-Main references:<br>
+The commands are quite cumbersome but with these references I have managed to have a basic understanding:
 https://techpubs.jurassic.nl/manuals/0650/admin/IA_DiskFiles/sgi_html/index.html
 http://ibgwww.colorado.edu/~lessem/psyc5112/usail/peripherals/
 
-Read chapter 1 on the first link to understand basic concepts:<br>
+Please read chapter 1 on the first link to understand the basic concepts:<br>
 https://techpubs.jurassic.nl/manuals/0650/admin/IA_DiskFiles/sgi_html/ch01.html
 
-Let's begin with an empty disk with SCSI address 1, what contains its volume header?:
+Let's start with a blank drive with SCSI address 1, let's see what its volume header contains:
 ```
 prtvtoc /dev/dsk/dks0d1vol
 Segmentation fault (core dumped)
 ```
 
-The disk doesn't have volume header, can we edit it?
+The disk doesn't have volume header, let's check if we can edit it:
 ```
 dvhtool /dev/rdsk/dks0d1vh
 dvhtool: can't open volume header /dev/rdsk/dks0d1vh
 Volume? (/dev/rdsk/dks0d1vh)
 ```
-Note: disk devices are on /dev/rdsk, list then running:
+Note: disk devices are on /dev/rdsk, including the ones ending in vh with the volume headers, list them running:
 ```
 ls -l /dev/rdsk/*
 ```
 
-In fact, the disk is empty. Let's partition it:
+Indeed, empty disk. Let's partition it:
 ```
 fx -x
 fx version 6.5, Oct  6, 2003
@@ -44,7 +44,7 @@ NOTE:  existing partitions are inconsistent with drive geometry
 [b]adblock/        [exe]rcise/        [r]epartition/
 ```
 
-It doesn't contain partitions:
+Indeed, it contains no partitions:
 ```
 fx> r
 
@@ -61,11 +61,11 @@ capacity is 17773524 blocks
 ```
 
 #### Partition templates
-1. [ro]otdrive. This schema contains:
-- partition 0 (root), boot partition containing all files
+1. [ro]otdrive. This scheme contains:
+- partition 0 (root), boot partition containing all the files
 - partition 1 for swap
-- partition 8 for volume header. It's an "odd" partition containing several files and the partition schema, device parameters and some programs (check https://techpubs.jurassic.nl/manuals/0650/admin/IA_DiskFiles/sgi_html/ch01.html#LE18926-PARENT)
-- partition 10 that represents the whole disk
+- partition 8 for volume header. It's an "odd" partition containing several files and the partition scheme, device parameters and some programs (check https://techpubs.jurassic.nl/manuals/0650/admin/IA_DiskFiles/sgi_html/ch01.html#LE18926-PARENT)
+- partition 10 representing the entire disk
 ```
 fx/repartition> ro
 
@@ -89,8 +89,8 @@ capacity is 17773524 blocks
 [u]srrootdrive        [re]size
 ```
 
-2. [u]srrootdrive. This schema contains the same partitions than [ro]otdrive and:
-- partition 6 (usr), to separate filesystems root and usr
+2. [u]srrootdrive. With this scheme we have the same partitions as with [ro]otdrive plus:
+- partition 6 (usr) to separate root and usr file systems
 ```
 fx/repartition> u
 
@@ -112,8 +112,8 @@ capacity is 17773524 blocks
 fx/repartition>
 ```
 
-3. [o]ptiondrive.
-- partition 7 for general data store, useful for example when we have a secondary disk for data
+3. [o]ption drive.
+- partition 7 for general storage, useful for example when we have a second disk exclusively used for data
 ```
 fx/repartition> o 
 
@@ -133,9 +133,9 @@ capacity is 17773524 blocks
 fx/repartition>
 ```
 
-Now let's make the partitioning more complicated. What about a root partition and another one for data? For example with big disks using EFS, where the maximum partition is 8 GB, we could have:
-- one root EFS partition of 8 GB and another one of type 7 EFS of 8 GB
-- one root EFS partition of 2 GB and another one of type 7 XFS containing the remaining disk space
+Now let's make the partitioning more complicated. What about a root partition and another one for data? For example on large disks using EFS, whose maximum partition is 8 GB, we could have:
+- a root EFS partition of 8 GB and another one of type 7 EFS of 8 GB
+- a root EFS partition of 2 GB and another one of type 7 XFS with the remaining capacity
 
 As practical example, let's partition a disk using two XFS partitions:
 
@@ -251,22 +251,22 @@ for older IRIX versions:
 mkfs_efs /dev/dsk/dks0d1s7
 ```
 
-Note: in /dev/dsk are the disk devices, you can see them running:
+Note: on /dev/dsk are the disk devices, list them running:
 ```
 ls -l /dev/dsk/*
 ```
 
-6. To temporarily mount the partition we can use mnt:
+6. To temporarily mount the partition we can use /mnt:
 ```
 mount /dev/dsk/dks0d1s7 /mnt
 ```
 
 7. To mount the partition permanently we can do it from the desktop with the Filesystem Manager or by adding in fstab:
 ```
-/dev/dsk/dks0d1s7   /punto_montaje     xfs   rw  0 0
+/dev/dsk/dks0d1s7   /mount_point     xfs   rw  0 0
 ```
 
 or if using EFS:
 ```
-/dev/dsk/dks0d1s7   /punto_montaje     efs   rw  0 0
+/dev/dsk/dks0d1s7   /mount_point     efs   rw  0 0
 ```
