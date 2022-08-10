@@ -133,6 +133,7 @@ capacity is 17773524 blocks
 fx/repartition>
 ```
 
+#### Custom partitioning
 Now let's make the partitioning more complicated. What about a root partition and another one for data? For example on large disks using EFS, whose maximum partition is 8 GB, we could have:
 - a root EFS partition of 8 GB and another one of type 7 EFS of 8 GB
 - a root EFS partition of 2 GB and another one of type 7 XFS with the remaining capacity
