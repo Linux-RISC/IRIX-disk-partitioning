@@ -227,3 +227,46 @@ capacity is 17773524 blocks
 fx/repartition>
 ```
 
+4. Let's check everything is correct:
+```
+prtvtoc /dev/dsk/dks0d1vol
+* /dev/dsk/dks0d1vol (bootfile "/unix")
+*     512 bytes/sector
+Partition  Type  Fs   Start: sec    Size: sec   Mount Directory
+ 0          xfs           266240      4194304 
+ 1          raw             4096       262144 
+ 7          xfs          4460544     13312980 
+ 8       volhdr                0         4096 
+10       volume                0     17773524 
+```
+
+5. Let's format partitions:
+- note: dks0d1s7 corresponds to controller 0, SCSI address 1 and partition 7
+```
+mkfs_xfs /dev/dsk/dks0d1s7
+```
+
+for older IRIX versions:
+```
+mkfs_efs /dev/dsk/dks0d1s7
+```
+
+Note: in /dev/dsk are the disk devices, you can see them running:
+```
+ls -l /dev/dsk/*
+```
+
+6. To temporarily mount the partition we can use mnt:
+```
+mount /dev/dsk/dks0d1s7 /mnt
+```
+
+7. To mount the partition permanently we can do it from the desktop with the Filesystem Manager or by adding in fstab:
+```
+/dev/dsk/dks0d1s7   /punto_montaje     xfs   rw  0 0
+```
+
+or if using EFS:
+```
+/dev/dsk/dks0d1s7   /punto_montaje     efs   rw  0 0
+```
