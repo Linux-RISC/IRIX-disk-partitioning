@@ -48,7 +48,13 @@ NOTE:  existing partitions are inconsistent with drive geometry
 
 Indeed, it contains no partitions:
 ```
-fx> r
+fx> [l]abel
+fx/label> [c]reate
+fx/label/create> [a]ll
+fx/label/create> ..
+fx/label> [sy]nc
+fx/label> ..
+fx> [r]epartition
 
 ----- partitions-----
 part  type        blocks            Megabytes   (base+size)
